@@ -1,3 +1,4 @@
+// src/components/expense/ExpenseList.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Filter, Search } from 'lucide-react';
@@ -13,23 +14,21 @@ const ExpenseList = ({ expenses, onEdit, onDelete, currentMonth }) => {
   const [sortOrder, setSortOrder] = useState('desc');
 
   useEffect(() => {
-    let result = [...expenses].filter(expense => 
-      getMonthFromDate(expense.date) === currentMonth
-    );
+    let result = [...expenses].filter((expense) => getMonthFromDate(expense.date) === currentMonth);
 
     if (searchTerm) {
-      result = result.filter(expense => 
+      result = result.filter((expense) =>
         expense.description.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedCategory) {
-      result = result.filter(expense => expense.categoryId === selectedCategory);
+      result = result.filter((expense) => expense.categoryId === selectedCategory);
     }
 
     result.sort((a, b) => {
       if (sortBy === 'date') {
-        return sortOrder === 'asc' 
+        return sortOrder === 'asc'
           ? new Date(a.date).getTime() - new Date(b.date).getTime()
           : new Date(b.date).getTime() - new Date(a.date).getTime();
       } else {
@@ -67,7 +66,7 @@ const ExpenseList = ({ expenses, onEdit, onDelete, currentMonth }) => {
                   className="input pr-10 appearance-none border-purple-100 focus:border-purple-300 focus:ring-purple-200"
                 >
                   <option value="">All Categories</option>
-                  {categories.map(category => (
+                  {categories.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
@@ -104,20 +103,11 @@ const ExpenseList = ({ expenses, onEdit, onDelete, currentMonth }) => {
 
         <AnimatePresence initial={false}>
           {filteredExpenses.length > 0 ? (
-            filteredExpenses.map(expense => (
-              <ExpenseItem
-                key={expense.id}
-                expense={expense}
-                onEdit={onEdit}
-                onDelete={onDelete}
-              />
+            filteredExpenses.map((expense) => (
+              <ExpenseItem key={expense.id} expense={expense} onEdit={onEdit} onDelete={onDelete} />
             ))
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="text-center py-6"
-            >
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-6">
               <p className="text-purple-600">No expenses found</p>
             </motion.div>
           )}

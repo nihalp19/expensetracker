@@ -1,29 +1,27 @@
+// src/components/expense/ExpenseForm.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
-import { useExpense } from '../../context/ExpenseContext';
-import { categories } from '../../data/categories';
+import { useExpenseStore } from '../../stores/useExpenseStore';
 
 const ExpenseForm = ({ onClose, expense }) => {
-  const { addExpense, updateExpense } = useExpense();
+  const { addExpense, updateExpense, categories } = useExpenseStore();
+
   const [formData, setFormData] = useState({
     amount: expense?.amount.toString() || '',
-    date: expense?.date.split('T')[0] || new Date().toISOString().split('T')[0],
+    date: expense?.date?.split('T')[0] || new Date().toISOString().split('T')[0],
     categoryId: expense?.categoryId || categories[0].id,
     description: expense?.description || '',
   });
-  const [errors, setErrors] = useState({
-    amount: '',
-    description: '',
-  });
+
+  const [errors, setErrors] = useState({ amount: '', description: '' });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when field is edited
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -47,10 +45,7 @@ const ExpenseForm = ({ onClose, expense }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     if (expense) {
       updateExpense({
@@ -85,23 +80,20 @@ const ExpenseForm = ({ onClose, expense }) => {
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ type: 'spring', damping: 20 }}
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">
-            {expense ? 'Edit Expense' : 'Add New Expense'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <h2 className="text-xl font-semibold">{expense ? 'Edit Expense' : 'Add New Expense'}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4">
           <div className="mb-4">
-            <label htmlFor="amount" className="label">Amount</label>
+            <label htmlFor="amount" className="label">
+              Amount
+            </label>
             <input
               type="number"
               id="amount"
@@ -113,13 +105,13 @@ const ExpenseForm = ({ onClose, expense }) => {
               className={`input ${errors.amount ? 'border-error-500 focus:ring-error-500' : ''}`}
               placeholder="0.00"
             />
-            {errors.amount && (
-              <p className="mt-1 text-sm text-error-600">{errors.amount}</p>
-            )}
+            {errors.amount && <p className="mt-1 text-sm text-error-600">{errors.amount}</p>}
           </div>
 
           <div className="mb-4">
-            <label htmlFor="date" className="label">Date</label>
+            <label htmlFor="date" className="label">
+              Date
+            </label>
             <input
               type="date"
               id="date"
@@ -131,7 +123,9 @@ const ExpenseForm = ({ onClose, expense }) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="categoryId" className="label">Category</label>
+            <label htmlFor="categoryId" className="label">
+              Category
+            </label>
             <select
               id="categoryId"
               name="categoryId"
@@ -139,7 +133,7 @@ const ExpenseForm = ({ onClose, expense }) => {
               onChange={handleChange}
               className="input"
             >
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
@@ -148,7 +142,9 @@ const ExpenseForm = ({ onClose, expense }) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="description" className="label">Description</label>
+            <label htmlFor="description" className="label">
+              Description
+            </label>
             <input
               type="text"
               id="description"
@@ -158,9 +154,7 @@ const ExpenseForm = ({ onClose, expense }) => {
               className={`input ${errors.description ? 'border-error-500 focus:ring-error-500' : ''}`}
               placeholder="Lunch with colleagues"
             />
-            {errors.description && (
-              <p className="mt-1 text-sm text-error-600">{errors.description}</p>
-            )}
+            {errors.description && <p className="mt-1 text-sm text-error-600">{errors.description}</p>}
           </div>
 
           <div className="flex justify-end space-x-2 mt-6">
@@ -171,10 +165,7 @@ const ExpenseForm = ({ onClose, expense }) => {
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-            >
+            <button type="submit" className="btn btn-primary">
               {expense ? 'Update' : 'Add'} Expense
             </button>
           </div>

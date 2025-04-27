@@ -1,3 +1,4 @@
+// src/components/expense/ExpenseItem.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2 } from 'lucide-react';
@@ -19,13 +20,11 @@ const ExpenseItem = ({ expense, onEdit, onDelete }) => {
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           {category && (
-            <div 
+            <div
               className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
               style={{ backgroundColor: category.color + '20' }}
             >
-              <span style={{ color: category.color }}>
-                {category.icon.charAt(0).toUpperCase()}
-              </span>
+              <span style={{ color: category.color }}>{category.icon.charAt(0).toUpperCase()}</span>
             </div>
           )}
           <div>
@@ -33,10 +32,7 @@ const ExpenseItem = ({ expense, onEdit, onDelete }) => {
             <div className="flex items-center text-sm text-gray-500">
               <span>{formatDate(expense.date)}</span>
               <span className="mx-2">•</span>
-              <span 
-                className="badge" 
-                style={{ backgroundColor: category?.color + '20', color: category?.color }}
-              >
+              <span className="badge" style={{ backgroundColor: category?.color + '20', color: category?.color }}>
                 {category?.name}
               </span>
             </div>

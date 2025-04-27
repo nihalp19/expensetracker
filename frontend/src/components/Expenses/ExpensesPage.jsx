@@ -1,13 +1,14 @@
+// src/components/expense/ExpensesPage.jsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PlusCircle, Calendar } from 'lucide-react';
-import { useExpense } from '../../context/ExpenseContext';
+import { useExpenseStore } from '../../stores/useExpenseStore';
 import ExpenseList from './ExpenseList';
 import ExpenseForm from './ExpenseForm';
 import { formatMonth } from '../../utils/formatters';
 
 const ExpensesPage = () => {
-  const { expenses, deleteExpense, currentMonth, setCurrentMonth } = useExpense();
+  const { expenses, deleteExpense, currentMonth, setCurrentMonth } = useExpenseStore();
   const [showForm, setShowForm] = useState(false);
   const [editingExpense, setEditingExpense] = useState(undefined);
   const [isMonthPickerOpen, setIsMonthPickerOpen] = useState(false);
@@ -29,7 +30,7 @@ const ExpensesPage = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <motion.h2 
+        <motion.h2
           className="text-2xl font-bold"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -39,10 +40,7 @@ const ExpensesPage = () => {
         </motion.h2>
         <div className="flex items-center space-x-3">
           <div className="relative">
-            <button
-              onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)}
-              className="btn btn-secondary flex items-center"
-            >
+            <button onClick={() => setIsMonthPickerOpen(!isMonthPickerOpen)} className="btn btn-secondary flex items-center">
               <Calendar size={16} className="mr-2" />
               {formatMonth(currentMonth)}
             </button>
@@ -76,12 +74,7 @@ const ExpensesPage = () => {
         </div>
       </div>
 
-      <ExpenseList
-        expenses={expenses}
-        onEdit={handleEditClick}
-        onDelete={deleteExpense}
-        currentMonth={currentMonth}
-      />
+      <ExpenseList expenses={expenses} onEdit={handleEditClick} onDelete={deleteExpense} currentMonth={currentMonth} />
 
       <AnimatePresence>
         {showForm && (
