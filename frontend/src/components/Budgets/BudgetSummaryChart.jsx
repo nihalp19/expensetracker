@@ -1,3 +1,4 @@
+// src/components/budget/BudgetSummaryChart.jsx
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Bar } from 'react-chartjs-2';
@@ -10,22 +11,15 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
-import { useExpense } from '../../context/ExpenseContext';
+import { useBudgetStore } from '../../stores/useBudgetStore';
 import { calculateBudgetStatus } from '../../utils/calculations';
 import { formatCurrency } from '../../utils/formatters';
 import { getCategoryById } from '../../data/categories';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const BudgetSummaryChart = () => {
-  const { expenses, budgets, currentMonth } = useExpense();
+  const { expenses, budgets, currentMonth, categories } = useBudgetStore();
   const [chartData, setChartData] = useState({
     labels: [],
     datasets: [],
@@ -50,20 +44,20 @@ const BudgetSummaryChart = () => {
       return;
     }
 
-    // Sort budget status by category name
+    // Sort by category name
     budgetStatus.sort((a, b) => {
-      const catA = getCategoryById(a.categoryId);
-      const catB = getCategoryById(b.categoryId);
+      const catA = categories.find((c) => c.id === a.categoryId);
+      const catB = categories.find((c) => c.id === b.categoryId);
       return (catA?.name || '').localeCompare(catB?.name || '');
     });
 
-    const labels = budgetStatus.map(item => {
-      const category = getCategoryById(item.categoryId);
+    const labels = budgetStatus.map((item) => {
+      const category = categories.find((c) => c.id === item.categoryId);
       return category ? category.name : 'Unknown';
     });
 
-    const colors = budgetStatus.map(item => {
-      const category = getCategoryById(item.categoryId);
+    const colors = budgetStatus.map((item) => {
+      const category = categories.find((c) => c.id === item.categoryId);
       return category ? category.color : '#cccccc';
     });
 
@@ -72,8 +66,8 @@ const BudgetSummaryChart = () => {
       datasets: [
         {
           label: 'Budget',
-          data: budgetStatus.map(item => item.budget),
-          backgroundColor: colors.map(color => color + '40'),
+          data: budgetStatus.map((item) => item.budget),
+          backgroundColor: colors.map((color) => color + '40'),
           borderColor: colors,
           borderWidth: 1,
           barPercentage: 0.6,
@@ -81,8 +75,8 @@ const BudgetSummaryChart = () => {
         },
         {
           label: 'Spent',
-          data: budgetStatus.map(item => item.spent),
-          backgroundColor: budgetStatus.map(item =>
+          data: budgetStatus.map((item) => item.spent),
+          backgroundColor: budgetStatus.map((item) =>
             item.spent > item.budget ? 'rgba(239, 68, 68, 0.8)' : 'rgba(16, 185, 129, 0.8)'
           ),
           borderWidth: 0,
@@ -91,46 +85,38 @@ const BudgetSummaryChart = () => {
         },
       ],
     });
-  }, [expenses, budgets, currentMonth]);
+  }, [expenses, budgets, currentMonth, categories]);
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: 'top',
-      },
+      legend: { position: 'top' },
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += formatCurrency(context.parsed.y);
-            }
+            if (label) label += ': ';
+            if (context.parsed.y !== null) label += formatCurrency(context.parsed.y);
             return label;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: function(value) {
-            return formatCurrency(value);
-          }
-        }
+          callback: (value) => formatCurrency(value),
+        },
       },
       x: {
         ticks: {
           maxRotation: 45,
           minRotation: 45,
-        }
-      }
-    }
+        },
+      },
+    },
   };
 
   return (

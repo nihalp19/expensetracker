@@ -1,27 +1,11 @@
+// src/components/budget/BudgetForm.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
+import { useBudgetStore } from '../../stores/useBudgetStore';
 
-// Dummy context and data to make this standalone
-const categories = [
-  { id: 'food', name: 'Food' },
-  { id: 'transport', name: 'Transport' },
-  { id: 'entertainment', name: 'Entertainment' },
-];
-
-const useExpense = () => {
-  const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
-  const addBudget = (budget) => {
-    console.log('Add budget:', budget);
-  };
-  const updateBudget = (budget) => {
-    console.log('Update budget:', budget);
-  };
-  return { addBudget, updateBudget, currentMonth };
-};
-
-export const BudgetForm = ({ onClose, budget }) => {
-  const { addBudget, updateBudget, currentMonth } = useExpense();
+const BudgetForm = ({ onClose, budget }) => {
+  const { addBudget, updateBudget, currentMonth, categories } = useBudgetStore();
   const [formData, setFormData] = useState({
     amount: budget?.amount.toString() || '',
     month: budget?.month || currentMonth,
@@ -31,9 +15,9 @@ export const BudgetForm = ({ onClose, budget }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: '' }));
     }
   };
 
@@ -85,20 +69,17 @@ export const BudgetForm = ({ onClose, budget }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center p-4 border-b">
-          <h2 className="text-xl font-semibold">
-            {budget ? 'Edit Budget' : 'Set New Budget'}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-          >
+          <h2 className="text-xl font-semibold">{budget ? 'Edit Budget' : 'Set New Budget'}</h2>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
             <X size={20} />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4">
           <div className="mb-4">
-            <label htmlFor="categoryId" className="label">Category</label>
+            <label htmlFor="categoryId" className="label">
+              Category
+            </label>
             <select
               id="categoryId"
               name="categoryId"
@@ -106,7 +87,7 @@ export const BudgetForm = ({ onClose, budget }) => {
               onChange={handleChange}
               className="input"
             >
-              {categories.map(category => (
+              {categories.map((category) => (
                 <option key={category.id} value={category.id}>
                   {category.name}
                 </option>
@@ -115,7 +96,9 @@ export const BudgetForm = ({ onClose, budget }) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="month" className="label">Month</label>
+            <label htmlFor="month" className="label">
+              Month
+            </label>
             <input
               type="month"
               id="month"
@@ -127,7 +110,9 @@ export const BudgetForm = ({ onClose, budget }) => {
           </div>
 
           <div className="mb-4">
-            <label htmlFor="amount" className="label">Budget Amount</label>
+            <label htmlFor="amount" className="label">
+              Budget Amount
+            </label>
             <input
               type="number"
               id="amount"
@@ -139,9 +124,7 @@ export const BudgetForm = ({ onClose, budget }) => {
               className={`input ${errors.amount ? 'border-error-500 focus:ring-error-500' : ''}`}
               placeholder="0.00"
             />
-            {errors.amount && (
-              <p className="mt-1 text-sm text-error-600">{errors.amount}</p>
-            )}
+            {errors.amount && <p className="mt-1 text-sm text-error-600">{errors.amount}</p>}
           </div>
 
           <div className="flex justify-end space-x-2 mt-6">
@@ -152,10 +135,7 @@ export const BudgetForm = ({ onClose, budget }) => {
             >
               Cancel
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-            >
+            <button type="submit" className="btn btn-primary">
               {budget ? 'Update' : 'Set'} Budget
             </button>
           </div>
@@ -165,3 +145,4 @@ export const BudgetForm = ({ onClose, budget }) => {
   );
 };
 
+export default BudgetForm;

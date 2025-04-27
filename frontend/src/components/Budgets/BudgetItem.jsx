@@ -1,25 +1,22 @@
+// src/components/budget/BudgetItem.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Edit, Trash2 } from 'lucide-react';
 import { formatCurrency } from '../../utils/formatters';
-import { getCategoryById } from '../../data/categories';
-import { useExpense } from '../../context/ExpenseContext';
+import { useBudgetStore } from '../../stores/useBudgetStore';
 import { calculateCategoryTotals, getExpensesByMonth } from '../../utils/calculations';
 
 const BudgetItem = ({ budget, onEdit, onDelete }) => {
-  const category = getCategoryById(budget.categoryId);
-  const { expenses } = useExpense();
+  const { categories, expenses } = useBudgetStore();
+  const category = categories.find((c) => c.id === budget.categoryId);
 
-  // Calculate how much has been spent in this category for the month
   const monthlyExpenses = getExpensesByMonth(expenses, budget.month);
   const categoryTotals = calculateCategoryTotals(monthlyExpenses);
-  const categoryTotal = categoryTotals.find(ct => ct.categoryId === budget.categoryId);
+  const categoryTotal = categoryTotals.find((ct) => ct.categoryId === budget.categoryId);
   const spentAmount = categoryTotal ? categoryTotal.total : 0;
 
-  // Calculate percentage spent
   const percentSpent = (spentAmount / budget.amount) * 100;
 
-  // Determine color based on percentage spent
   let progressColor = 'bg-success-500';
   if (percentSpent > 100) {
     progressColor = 'bg-error-500';
@@ -43,9 +40,7 @@ const BudgetItem = ({ budget, onEdit, onDelete }) => {
               className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
               style={{ backgroundColor: category.color + '20' }}
             >
-              <span style={{ color: category.color }}>
-                {category.icon.charAt(0).toUpperCase()}
-              </span>
+              <span style={{ color: category.color }}>{category.icon.charAt(0).toUpperCase()}</span>
             </div>
           )}
           <div>
